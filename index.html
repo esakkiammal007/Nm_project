@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management System</title>
+
+ <style>
+    body {
+        font-family: "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #1a0000, #000);
+        color: #fff;
+        min-height: 100vh;
+    }
+
+    .container {
+        width: 65%;
+        margin: 40px auto;
+        background: rgba(20, 0, 0, 0.9);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 0 25px #ff1a1a;
+        border: 1px solid #ff1a1a;
+    }
+
+    h2, h3 {
+        text-align: center;
+        color: #ff4d4d;
+        text-shadow: 0 0 10px #ff1a1a;
+    }
+
+    label {
+        margin-top: 12px;
+        display: block;
+        color: #ffb3b3;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        background: #000;
+        border: 1px solid #ff1a1a;
+        border-radius: 6px;
+        color: #fff;
+        box-shadow: 0 0 8px rgba(255, 26, 26, 0.6);
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        box-shadow: 0 0 12px #ff1a1a;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        background: #ff1a1a;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 0 15px #ff1a1a;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #ff4d4d;
+        box-shadow: 0 0 25px #ff4d4d;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 25px;
+        border-collapse: collapse;
+        color: #fff;
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #ff1a1a;
+        text-align: center;
+    }
+
+    th {
+        background: rgba(255, 26, 26, 0.2);
+        text-shadow: 0 0 5px #ff1a1a;
+    }
+
+    tr:hover {
+        background: rgba(255, 26, 26, 0.1);
+    }
+
+    .edit {
+        background: #00cc66;
+        border: none;
+        padding: 6px 12px;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 0 10px #00cc66;
+    }
+
+    .delete {
+        background: #ff1a1a;
+        border: none;
+        padding: 6px 12px;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 0 10px #ff1a1a;
+    }
+
+    .edit:hover {
+        box-shadow: 0 0 18px #00ff99;
+    }
+
+    .delete:hover {
+        box-shadow: 0 0 18px #ff4d4d;
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <h2>User Registration Form</h2>
+
+    <form id="userForm">
+        <input type="hidden" id="editIndex">
+
+        <label>Name</label>
+        <input type="text" id="name" required>
+
+        <label>Age</label>
+        <input type="number" id="age" required>
+
+        <label>Gender</label>
+        <select id="gender" required>
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+        </select>
+
+        <label>Date of Birth</label>
+        <input type="date" id="dob" required>
+
+        <label>Location</label>
+        <input type="text" id="location" required>
+
+        <button type="submit">Save User</button>
+    </form>
+
+    <h3>Registered Users</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+    </table>
+</div>
+
+<script>
+    let users = [];
+
+    const form = document.getElementById("userForm");
+    const table = document.getElementById("userTable");
+
+    const nameInput = document.getElementById("name");
+    const ageInput = document.getElementById("age");
+    const genderInput = document.getElementById("gender");
+    const dobInput = document.getElementById("dob");
+    const locationInput = document.getElementById("location");
+    const editIndexInput = document.getElementById("editIndex");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const user = {
+            name: nameInput.value,
+            age: ageInput.value,
+            gender: genderInput.value,
+            dob: dobInput.value,
+            location: locationInput.value
+        };
+
+        if (editIndexInput.value === "") {
+            users.push(user); // CREATE
+        } else {
+            users[editIndexInput.value] = user; // UPDATE
+            editIndexInput.value = "";
+        }
+
+        form.reset();
+        displayUsers();
+    });
+
+    function displayUsers() {
+        table.innerHTML = "";
+
+        users.forEach((user, index) => {
+            table.innerHTML += `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.age}</td>
+                    <td>${user.gender}</td>
+                    <td>${user.dob}</td>
+                    <td>${user.location}</td>
+                    <td>
+                        <button class="edit" onclick="editUser(${index})">Edit</button>
+                        <button class="delete" onclick="deleteUser(${index})">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function editUser(index) {
+        const user = users[index];
+        nameInput.value = user.name;
+        ageInput.value = user.age;
+        genderInput.value = user.gender;
+        dobInput.value = user.dob;
+        locationInput.value = user.location;
+        editIndexInput.value = index;
+    }
+
+    function deleteUser(index) {
+        if (confirm("Are you sure you want to delete this user?")) {
+            users.splice(index, 1);
+            displayUsers();
+        }
+    }
+</script>
+
+
+</body>
+</html>
